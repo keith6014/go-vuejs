@@ -1,4 +1,5 @@
 *.swp
+proto/helloworld/*.go
 bin/
 bin/protoc
 server

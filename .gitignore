@@ -1,4 +1,5 @@
 *.swp
+cmd/helloworld
 proto/helloworld/*.go
 bin/
 bin/protoc

@@ -4,12 +4,12 @@ import (
 	"context"
 	"embed"
 	_ "embed"
-	"encoding/json"
 	"fmt"
 	"io/fs"
 	"log"
 	"net"
 	"net/http"
+	"strings"
 
 	pb "go-vuejs/proto/helloworld"
 
@@ -36,10 +36,10 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 }
 
 //go:embed "helloworld/helloworld.swagger.json"
-var myjson string
+var swagger []byte
 
-//go:embed "helloworld/swagger-ui-3.47.1/dist"
-var content embed.FS
+//go:embed static/swagger-ui-3.47.1/dist
+var static embed.FS
 
 func main() {
 	log.Println("grpc server on", port)
@@ -82,25 +82,21 @@ func main() {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	//	mux := http.NewServeMux()
-	//	mux.Handle("/", gwmux)
-	//	mux.Handle("/helloworld/", http.StripPrefix("/helloworld/", fs))
-	//	mux.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
-	//		io.WriteString(w, string(myjson))
-	//	})
-
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Handle("/", gwmux)
+	r.Handle("/hello_world", gwmux)
+
 	r.HandleFunc("/api/swagger.json", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		b, err := json.Marshal(myjson)
-		if err != nil {
-			http.Error(w, err.Error(), 422)
-		}
-		w.Write(b)
+		w.Write(swagger)
 	})
-	r.Handle("/d", clientHandler())
+
+	fsys := fs.FS(static)
+	contentStatic, err := fs.Sub(fsys, "static/swagger-ui-3.47.1/dist")
+	if err != nil {
+		log.Println("content static", err)
+	}
+	FileServer(r, "/api", http.FS(contentStatic))
 
 	log.Println("Starting up webserver on :8080")
 	//log.Fatalln(gwServer.ListenAndServe())
@@ -108,11 +104,30 @@ func main() {
 }
 
 func clientHandler() http.Handler {
-	fsys := fs.FS(content)
+	fsys := fs.FS(static)
 	contentStatic, err := fs.Sub(fsys, "index.html")
 	if err != nil {
 		log.Println(err)
 	}
 	fmt.Println(contentStatic)
 	return http.FileServer(http.FS(contentStatic))
+}
+
+func FileServer(r chi.Router, path string, root http.FileSystem) {
+	if strings.ContainsAny(path, "{}*") {
+		panic("FileServer does not permit any URL parameters.")
+	}
+
+	if path != "/" && path[len(path)-1] != '/' {
+		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
+		path += "/"
+	}
+	path += "*"
+
+	r.Get(path, func(w http.ResponseWriter, r *http.Request) {
+		rctx := chi.RouteContext(r.Context())
+		pathPrefix := strings.TrimSuffix(rctx.RoutePattern(), "/*")
+		fs := http.StripPrefix(pathPrefix, http.FileServer(root))
+		fs.ServeHTTP(w, r)
+	})
 }

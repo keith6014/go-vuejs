@@ -9,12 +9,13 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    host:"localhost:8080";
     info: {
       title: "grpc-rest-openapi-demo";
       version: "1.0";
       contact: {
-        name: "Lorand Fazakas";
-        url: "https://github.com/lorandfazakas/grpc-rest-openapi-demo";
+        name: "Some Name";
+        url: "http://someplace.com";
         email: "example@example.com";
       };
     };

@@ -5,6 +5,9 @@ all: server
 bin/protoc:
 	wget https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-linux-x86_64.zip && unzip -o protoc-3.15.8-linux-x86_64.zip
 
+pre:
+	go mod tidy
+
 proto/helloworld/*.go: proto/helloworld/helloworld.proto bin/protoc
 	bin/protoc -I ./proto \
 		-I /home/user/go/pkg/mod/github.com/grpc-ecosystem/grpc-gateway/v2@v2.4.0/ \
@@ -17,7 +20,7 @@ proto/helloworld/*.go: proto/helloworld/helloworld.proto bin/protoc
 main: cmd/main.go
 	go build $^
 
-server: proto/helloworld/*.go cmd/server.go
+server: proto/helloworld/*.go cmd/server.go pre
 	go build cmd/server.go
 
 clean:

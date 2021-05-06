@@ -5,11 +5,13 @@ all: server
 bin/protoc:
 	wget --quiet https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-linux-x86_64.zip && unzip -q -o protoc-3.15.8-linux-x86_64.zip
 
+bin/protoc-gen-go-grpc:
+	export GOBIN=$(shell pwd)/bin && 
+
 pre:
 	export GOBIN=$(shell pwd)/bin && \
 	mkdir -p bin && \
 	go version && \
-	go mod tidy && \
 	go install \
 	github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
 	    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \

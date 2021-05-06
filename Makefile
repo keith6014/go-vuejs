@@ -8,6 +8,7 @@ bin/protoc:
 pre:
 	export GOBIN=$(shell pwd)/bin && \
 	mkdir -p bin && \
+	go version && \
 	go mod tidy && \
 	go install \
 	github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \

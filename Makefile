@@ -25,7 +25,7 @@ bin/proctoc-gen-swagger:
 		go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
 
 
-pre: bin/protoc-gen-grpc-gateway bin/protoc-gen-go-grpc bin/protoc-gen-openapiv2
+pre: bin/protoc-gen-grpc-gateway bin/protoc-gen-go-grpc bin/protoc-gen-openapiv2 bin/protoc-gen-go
 	export GOBIN=$(shell pwd)/bin && \
 	mkdir -p bin && \
 	go version && \

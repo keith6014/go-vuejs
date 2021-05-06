@@ -6,7 +6,9 @@ bin/protoc:
 	wget --quiet https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-linux-x86_64.zip && unzip -q -o protoc-3.15.8-linux-x86_64.zip
 
 pre:
-	go mod tidy
+	go mod tidy && \
+		go get google.golang.org/protobuf/cmd/protoc-gen-go \
+		         google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
 proto/helloworld/*.go: proto/helloworld/helloworld.proto bin/protoc pre
 	bin/protoc -I ./proto \

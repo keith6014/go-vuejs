@@ -9,7 +9,7 @@ pre:
 	mkdir -p bin && \
 	go mod tidy && \
 		go build google.golang.org/protobuf/cmd/protoc-gen-go \
-		   google.golang.org/grpc/cmd/protoc-gen-go-grpc && go env
+		   google.golang.org/grpc/cmd/protoc-gen-go-grpc && go env && find . -ls 
 
 proto/helloworld/*.go: proto/helloworld/helloworld.proto bin/protoc pre
 	bin/protoc -I ./proto \

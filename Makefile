@@ -12,7 +12,7 @@ pre:
 	export GOBIN=$(shell pwd)/bin && \
 	mkdir -p bin && \
 	go version && \
-	go mod tidy && 
+	go mod tidy && \
 	go install \
 	github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
 	    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \

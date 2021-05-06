@@ -8,7 +8,7 @@ bin/protoc:
 pre:
 	mkdir -p bin && \
 	go mod tidy && \
-		go install google.golang.org/protobuf/cmd/protoc-gen-go \
+		go build google.golang.org/protobuf/cmd/protoc-gen-go \
 		   google.golang.org/grpc/cmd/protoc-gen-go-grpc && go env
 
 proto/helloworld/*.go: proto/helloworld/helloworld.proto bin/protoc pre

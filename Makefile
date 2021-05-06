@@ -18,6 +18,7 @@ pre:
 
 proto/helloworld/*.go: proto/helloworld/helloworld.proto bin/protoc pre
 	export PATH=$(shell pwd)/bin:${PATH} && \
+		export GOBIN=$(shell pwd)/bin && \
 	bin/protoc -I ./proto \
 		-I $(shell go env GOMODCACHE)/github.com/grpc-ecosystem/grpc-gateway/v2@v2.4.0/ \
 		--go_out ./proto --go_opt paths=source_relative \

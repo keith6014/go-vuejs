@@ -8,7 +8,7 @@ bin/protoc:
 pre:
 	go mod tidy
 
-proto/helloworld/*.go: proto/helloworld/helloworld.proto bin/protoc
+proto/helloworld/*.go: proto/helloworld/helloworld.proto bin/protoc pre
 	bin/protoc -I ./proto \
 		-I /home/user/go/pkg/mod/github.com/grpc-ecosystem/grpc-gateway/v2@v2.4.0/ \
 		--go_out ./proto --go_opt paths=source_relative \
@@ -20,7 +20,7 @@ proto/helloworld/*.go: proto/helloworld/helloworld.proto bin/protoc
 main: cmd/main.go
 	go build $^
 
-server: proto/helloworld/*.go cmd/server.go pre
+server: proto/helloworld/*.go cmd/server.go 
 	go build cmd/server.go
 
 clean:

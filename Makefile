@@ -8,8 +8,12 @@ bin/protoc:
 pre:
 	mkdir -p bin && \
 	go mod tidy && \
-		go install google.golang.org/protobuf/cmd/protoc-gen-go \
-		   google.golang.org/grpc/cmd/protoc-gen-go-grpc && ls bin
+	go install \
+	github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
+	github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
+	google.golang.org/protobuf/cmd/protoc-gen-go \
+	google.golang.org/grpc/cmd/protoc-gen-go-grpc
+
 
 proto/helloworld/*.go: proto/helloworld/helloworld.proto bin/protoc pre
 	bin/protoc -I ./proto \

@@ -6,6 +6,7 @@ bin/protoc:
 	wget --quiet https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-linux-x86_64.zip && unzip -q -o protoc-3.15.8-linux-x86_64.zip
 
 pre:
+	mkdir -p bin && \
 	go mod tidy && \
 		go install google.golang.org/protobuf/cmd/protoc-gen-go \
 		   google.golang.org/grpc/cmd/protoc-gen-go-grpc && ls bin

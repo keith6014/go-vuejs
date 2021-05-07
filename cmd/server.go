@@ -35,6 +35,46 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 	return &pb.HelloReply{Message: in.Name + " world"}, nil
 }
 
+type WebServer struct {
+	r     chi.Router
+	gwmux http.Handler
+}
+
+func NewWebServer(gatewayHandler http.Handler) *WebServer {
+	srv := &WebServer{
+		r:     chi.NewRouter(),
+		gwmux: gatewayHandler,
+	}
+	srv.setup()
+	return srv
+}
+
+func (srv *WebServer) setup() {
+	r := srv.r
+
+	fsys := fs.FS(static)
+	contentStatic, err := fs.Sub(fsys, "static/swagger-ui-3.47.1/dist")
+	if err != nil {
+		log.Println("content static", err)
+	}
+	//	FileServer(r, "/api", http.FS(contentStatic))
+
+	r.Use(middleware.Logger)
+	r.Use(middleware.RequestID)
+
+	FileServer(r, "/api", http.FS(contentStatic))
+	r.HandleFunc("/api/swagger.json", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(swagger)
+	})
+
+	r.Handle("/hello_world", srv.gwmux)
+}
+
+func (srv *WebServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	srv.r.ServeHTTP(w, r)
+}
+
 //go:embed "helloworld/helloworld.swagger.json"
 var swagger []byte
 
@@ -68,38 +108,11 @@ func main() {
 		log.Fatalln("Failed to register gateway:", err)
 	}
 
-	//	gwServer := &http.Server{
-	//		Addr:    ":8080",
-	//		Handler: gwmux,
-	//	}
-
-	//fs := http.FileServer(http.Dir("./helloworld"))
-	//	err = gwmux.HandlePath("GET", "/b", func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//		w.Write([]byte("hello " + pathParams["name"]))
-	//	})
-
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-	r.Handle("/hello_world", gwmux)
-
-	r.HandleFunc("/api/swagger.json", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(swagger)
-	})
-
-	fsys := fs.FS(static)
-	contentStatic, err := fs.Sub(fsys, "static/swagger-ui-3.47.1/dist")
-	if err != nil {
-		log.Println("content static", err)
-	}
-	FileServer(r, "/api", http.FS(contentStatic))
-
-	log.Println("Starting up webserver on :8080")
-	//log.Fatalln(gwServer.ListenAndServe())
+	r := NewWebServer(gwmux)
 	log.Println(http.ListenAndServe(":8080", r))
 }
 

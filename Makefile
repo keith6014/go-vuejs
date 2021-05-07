@@ -10,7 +10,6 @@ bin/protoc:
 pre:
 	mkdir -p bin && \
 	go mod tidy && \
-	go mod download github.com/jstemmer/go-junit-report  && \
 	go install \
 	github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
 	github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \

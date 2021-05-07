@@ -1,6 +1,6 @@
 SHELL :=/bin/bash
 
-all: server
+all: pre server
 
 cache := $(shell go env GOMODCACHE)
 
@@ -20,7 +20,7 @@ pre:
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
 
-proto/helloworld/*.go: proto/helloworld/helloworld.proto bin/protoc 
+proto/helloworld/*.go: proto/helloworld/helloworld.proto bin/protoc
 	bin/protoc -I ./proto \
 		-I ${cache}/github.com/grpc-ecosystem/grpc-gateway/v2@v2.4.0/ \
 		--go_out ./proto --go_opt paths=source_relative \

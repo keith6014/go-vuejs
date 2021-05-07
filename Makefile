@@ -31,7 +31,8 @@ proto/helloworld/*.go: proto/helloworld/helloworld.proto bin/protoc pre
 
 
 test: cmd/server.go
-	go test ./... -v | tee >(go-junit-report > report.xml)
+	go get -u github.com/jstemmer/go-junit-report && \
+		go test ./... -v | tee >(go-junit-report > report.xml)
 
 server: proto/helloworld/*.go cmd/server.go 
 	go build cmd/server.go

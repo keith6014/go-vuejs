@@ -20,7 +20,10 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.16.3
+          go-version: 1.16.4
+
+      - name: Build
+        run: make
 
       - name: Tests
         run: make test
@@ -30,14 +33,3 @@ jobs:
         if: always()
         with:
           files: report.xml
-
-      - name: Build
-        run: make
-
-
-
-
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.

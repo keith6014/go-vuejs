@@ -10,10 +10,6 @@ wget https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/proto
 go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 ```
 
-```bash
-go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway google.golang.org/protobuf/cmd/protoc-gen-go google.golang.org/grpc/cmd/protoc-gen-go-grpc
-go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway google.golang.org/protobuf/cmd/protoc-gen-go google.golang.org/grpc/cmd/protoc-gen-go-grpc
-```
 
 ### google apis ###
 mkdir -p proto/google/api
@@ -25,4 +21,7 @@ mv googleapis-master/google/api/annotations.proto proto/google/api/
 ```
 https://grpc-ecosystem.github.io/grpc-gateway/docs/tutorials/adding_annotations/#using-protoc
 
+### test ###
+```bash
 curl -X POST -k localhost:8080/hello_world -d '{"name":"yo"}'
+```

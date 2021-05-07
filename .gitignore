@@ -1,4 +1,5 @@
 *.swp
+readme.txt
 *.zip
 cmd/helloworld
 proto/helloworld/*.go
@@ -6,3 +7,4 @@ bin/
 bin/protoc
 server
 main
+report.xml

@@ -25,7 +25,7 @@ jobs:
       - name: Build
         run: make
 
-      - name: Tests
+      - name: Run Tests
         run: make test
 
       - name: Publish Unit Test Results

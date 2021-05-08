@@ -5,6 +5,7 @@ import (
 	"embed"
 	_ "embed"
 	"fmt"
+	"html/template"
 	"io/fs"
 	"log"
 	"net"
@@ -53,19 +54,39 @@ func (srv *WebServer) setup() {
 	r := srv.r
 
 	fsys := fs.FS(static)
-	contentStatic, err := fs.Sub(fsys, "static/swagger-ui-3.47.1/dist")
+	swaggerStatic, err := fs.Sub(fsys, "static/swagger-ui-3.47.1/dist")
 	if err != nil {
-		log.Println("content static", err)
+		log.Println("content static swagger", err)
+	}
+
+	beaufyStatic, err := fs.Sub(fsys, "static/beufy")
+	if err != nil {
+		log.Fatal("content static beaufy", err)
 	}
 	//	FileServer(r, "/api", http.FS(contentStatic))
 
 	r.Use(middleware.Logger)
 	r.Use(middleware.RequestID)
 
-	FileServer(r, "/api", http.FS(contentStatic))
+	//http://localhost:8080/static/buefy/
+	FileServer(r, "/static/buefy", http.FS(beaufyStatic))
+
+	FileServer(r, "/api", http.FS(swaggerStatic))
+
 	r.HandleFunc("/api/swagger.json", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(swagger)
+	})
+
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		t, err := template.New("").Parse(indexTmpl)
+
+		if err != nil {
+			log.Println(err)
+		}
+
+		t.Execute(w, nil)
+
 	})
 
 	r.Handle("/hello_world", srv.gwmux)
@@ -78,8 +99,14 @@ func (srv *WebServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 //go:embed "helloworld/helloworld.swagger.json"
 var swagger []byte
 
-//go:embed static/swagger-ui-3.47.1/dist
+//go:embed static
 var static embed.FS
+
+//go:embed "tmpl/index.html"
+var indexTmpl string
+
+//go:embed node_modules
+var node_modules embed.FS
 
 func main() {
 	log.Println("grpc server on", port)

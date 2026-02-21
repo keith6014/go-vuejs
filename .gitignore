@@ -1,4 +1,6 @@
+include/
 *.swp
+proto_generated/
 protoc-*.zip*
 .gocache/
 readme.txt
@@ -7,6 +9,8 @@ cmd/helloworld
 proto/helloworld/*.go
 bin/
 bin/protoc
+*swagger.json
 server
 main
 report.xml
+proto/dump/

@@ -8,33 +8,36 @@ export GOBIN := $(PROJECT_DIR)/bin
 export PATH := $(PROJECT_DIR)/bin:$(PATH)
 
 bin/protoc:
-	wget --quiet https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-linux-x86_64.zip && unzip -q -o protoc-3.15.8-linux-x86_64.zip
+	wget --quiet https://github.com/protocolbuffers/protobuf/releases/download/v33.5/protoc-33.5-linux-x86_64.zip && unzip -q -o protoc-33.5-linux-x86_64.zip && \
+		touch $@
 
-pre:
+pre: 
 	mkdir -p $(PROJECT_DIR)/bin && \
-	go mod tidy && \
-	go install  github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 && \
-	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc && \
-	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway && \
-	go install github.com/jstemmer/go-junit-report/v2@latest
+		go mod tidy && \
+		go install  github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 && \
+		go install google.golang.org/grpc/cmd/protoc-gen-go-grpc && \
+		go install google.golang.org/protobuf/cmd/protoc-gen-go && \
+		go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway && \
+		go install github.com/jstemmer/go-junit-report/v2@latest
 
 
-proto/helloworld/*.go: proto/helloworld/helloworld.proto bin/protoc pre
-	bin/protoc -I ./proto \
-		-I $(GOMODCACHE)/github.com/grpc-ecosystem/grpc-gateway/v2@v2.4.0/ \
-		--go_out ./proto --go_opt paths=source_relative \
-		--go-grpc_out ./proto --go-grpc_opt paths=source_relative \
-		--grpc-gateway_out ./proto --grpc-gateway_opt paths=source_relative \
-		--swagger_out=logtostderr=true:cmd --go-grpc_opt paths=source_relative \
-		proto/helloworld/helloworld.proto
+proto_generated/helloworld/*.go: bin/protoc | pre
+	@echo "Testing Protoc" && \
+		protoc --version && \
+		mkdir -vp ./proto_generated && \
+		protoc -I ./proto -I ./third_party \
+		--go_out ./proto_generated --go_opt paths=source_relative \
+		--go-grpc_out ./proto_generated --go-grpc_opt paths=source_relative \
+		--grpc-gateway_out ./proto_generated --grpc-gateway_opt paths=source_relative \
+		--openapiv2_out cmd/ \
+		proto/helloworld/helloworld.proto  
 
+test: server
+	go test ./... -v | tee >(go-junit-report > report.xml)
 
-test: cmd/server.go
-	     go test ./... -v | tee >(go-junit-report > report.xml)
-
-server: proto/helloworld/*.go cmd/server.go 
-	     go build cmd/server.go
+server: proto_generated/helloworld/*.go cmd/server.go 
+	go build cmd/server.go
 
 clean:
-	rm -rf main server proto/helloworld/*.go cmd/helloworld
+	rm -rf main server proto/helloworld/*.go cmd/helloworld bin/* cmd/helloworld protoc-*.zip* proto_generated report.xml
 .PHONY: clean

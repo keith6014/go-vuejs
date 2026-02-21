@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"strings"
 
-	pb "go-vuejs/proto/helloworld"
+	pb "go-vuejs/proto_generated/helloworld"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"

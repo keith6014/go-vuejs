@@ -1,4 +1,6 @@
 *.swp
+protoc-*.zip*
+.gocache/
 readme.txt
 *.zip
 cmd/helloworld

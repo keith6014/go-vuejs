@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	pb "go-vuejs/proto/helloworld"
+	pb "go-vuejs/proto_generated/helloworld"
 	"io/ioutil"
 	"log"
 	"net"

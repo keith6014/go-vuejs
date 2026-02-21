@@ -1,28 +1,24 @@
 syntax="proto3";
 package helloworld;
 
-option go_package = "dump/helloworld";
+option go_package = "go-vuejs/proto/helloworld";
 
-import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
-
-
+import "google/api/annotations.proto";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
-    host:"localhost:8080";
-    info: {
-      title: "grpc-rest-openapi-demo";
-      version: "1.0";
-      contact: {
-        name: "Some Name";
-        url: "http://someplace.com";
-        email: "example@example.com";
-      };
+  info: {
+    title: "Hello World API";
+    version: "1.2.3"; // <--- Set your version number here
+    description: "This is a simple gRPC-Gateway example.";
+    contact: {
+      name: "Your Name";
+      url: "https://github.com/your-repo";
     };
-    schemes: HTTP;
-    schemes: HTTPS;
-    consumes: "application/json";
-    produces: "application/json";
+  };
+  schemes: HTTP;
+  consumes: "application/json";
+  produces: "application/json";
 };
 
 

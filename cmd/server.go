@@ -53,11 +53,10 @@ func (srv *WebServer) setup() {
 	r := srv.r
 
 	fsys := fs.FS(static)
-	contentStatic, err := fs.Sub(fsys, "static/swagger-ui-3.47.1/dist")
+	contentStatic, err := fs.Sub(fsys, "static/swagger-ui-5.31.2/dist")
 	if err != nil {
 		log.Println("content static", err)
 	}
-	//	FileServer(r, "/api", http.FS(contentStatic))
 
 	r.Use(middleware.Logger)
 	r.Use(middleware.RequestID)
@@ -78,7 +77,7 @@ func (srv *WebServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 //go:embed "helloworld/helloworld.swagger.json"
 var swagger []byte
 
-//go:embed static/swagger-ui-3.47.1/dist
+//go:embed static/swagger-ui-5.31.2/dist
 var static embed.FS
 
 func main() {
